@@ -1,0 +1,67 @@
+asyncapi: '2.2.0'
+id: 'urn:com:kafka:server'
+info:
+  title: Mailpiece Event Stream API
+  version: 3.2.*
+  description: Information about mailpieces
+  contact:
+    name: Andrea Chiodoni
+    email: andrea.chiodoni@post.ch
+channels:
+  logistics.Mailpiece-event:
+    description: Events happening to mailpieces.
+    subscribe:
+      tags:
+        - name: logistics
+        - name: mailpieces
+      message:
+        name: MailpieceEvent
+        contentType: application/json
+        payload:
+          $ref: '#/components/schemas/MailpieceEvent'
+      bindings:
+        kafka:
+          key:
+            type: string
+components:
+  schemas:
+    MailpieceEvent:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - timestamp
+      properties:
+        id:
+          type: string
+          description: Mailpiece identifier (record key).
+          maxLength: 18
+        timestamp:
+          type: string
+          format: date-time
+        ingested:
+          $ref: "#/components/schemas/IngestedMailpieceEvent"
+        delivered:
+          $ref: "#/components/schemas/DeliveredMailpieceEvent"
+    DeliveredMailpieceEvent:
+      type: object
+      description: Mailpieces that have been delivered.
+      additionalProperties: false
+      required:
+      - zip
+      properties:
+        zip:
+          type: string
+          description: Where it has been delivered.
+          maxLength: 4
+    IngestedMailpieceEvent:
+      type: object
+      description: Mailpieces that have been ingested.
+      additionalProperties: false
+      required:
+      - zip
+      properties:
+        zip:
+          type: string
+          description: Where it has been ingested.
+          maxLength: 4

@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  http2:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    ch.post: DEBUG
+    org.apache.kafka: WARN
+
+management:
+  endpoint.health:
+    show-details: always
+    show-components: always
+    probes.enabled: true
+  security.enabled: false
+  endpoints.web.exposure.include: '*'
+  metrics:
+    enable:
+      jvm: false
+
+spring:
+  rsocket:
+    server:
+      address: localhost
+      port: 7070
+  application:
+    name: mailpiece-processor
+  kafka:
+    bootstrap-servers: localhost:9094
+    client-id: mailpiece-processor
+    streams:
+      application-id: mailpiece-processor
+      state-dir: /tmp/kafka-streams
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 100
+      isolation-level: read_committed
+      properties:
+        application:
+          server: localhost:7070
+        processing:
+          guarantee: exactly_once_v2
+

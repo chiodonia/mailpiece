@@ -1,0 +1,17 @@
+{
+  "config": {
+    "example_name": "asyncapi-from-object"
+  },
+  "scripts": {
+    "generate": "ts-node ./generate-code.ts"
+  },
+  "dependencies": {
+    "@asyncapi/modelina": "^0.39.4",
+    "@types/js-yaml": "^4.0.4",
+    "fs": "^0.0.1-security",
+    "ts-node": "^10.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.6"
+  }
+}

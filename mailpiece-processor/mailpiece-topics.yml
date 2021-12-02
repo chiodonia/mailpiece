@@ -1,0 +1,25 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: logistics.mailpiece-event
+  labels:
+    strimzi.io/cluster: kafka
+spec:
+  topicName: logistics.Mailpiece-event
+  partitions: 6
+  replicas: 1
+  config:
+    retention.ms: 7200000
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: logistics.mailpiece-state
+  labels:
+    strimzi.io/cluster: kafka
+spec:
+  topicName: logistics.Mailpiece-state
+  partitions: 6
+  replicas: 1
+  config:
+    cleanup.policy: compact

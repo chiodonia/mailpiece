@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ksqldb-server
+spec:
+  selector:
+    matchLabels:
+      service: ksqldb-server
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: ksqldb-server
+    spec:
+      containers:
+      - env:
+        - name: KSQL_LISTENERS
+          value: http://0.0.0.0:8088
+        - name: KSQL_BOOTSTRAP_SERVERS
+          value: kafka-kafka-bootstrap.mailpiece.svc:9092
+        - name: KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE
+          value: "true"
+        - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
+          value: "true"
+#        - name: KSQL_KSQL_CONNECT_URL
+#          value: http://kafka-connect-connect-api:8083
+#        - name: KSQL_KSQL_QUERIES_FILE
+#          value: /data/opt/queries/queries.sql
+        image: confluentinc/ksqldb-server:latest
+        imagePullPolicy: IfNotPresent
+        name: ksqldb-server
+        ports:
+        - containerPort: 8088
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ksqldb-server
+  labels:
+    service: ksqldb-server
+spec:
+  ports:
+  - port: 8088
+    protocol: TCP
+  selector:
+    service: ksqldb-server

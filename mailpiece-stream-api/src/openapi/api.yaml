@@ -1,0 +1,42 @@
+swagger: "2.0"
+
+info:
+  title: Mailpiece Stream API
+  description: Information about Mailpieces
+  contact:
+    name: chiodonia
+
+host: server:8080
+basePath: Kafka
+
+paths:
+  logistics.Mailpiece-event:
+    get:
+      summary: What occurs on Mailpieces
+      description: Usual events in the life of a Mailpiece
+      tags:
+        - logistics.mailpiece
+      responses:
+        200:
+          description: The event which occured
+          schema:
+            type: array
+            $ref: "#/definitions/MailpieceEvent"
+
+  logistics.Mailpiece-state:
+    get:
+      summary: What occurs on Mailpieces
+      description: Usual events in the life of a Mailpiece
+      tags:
+        - logistics.mailpiece
+      responses:
+        200:
+          description: The event which occured
+          schema:
+            type: array
+            $ref: "#/definitions/Mailpiece"
+
+definitions:
+  $ref:
+    - ../ts/mailpiece.ts
+    - ../ts/mailpiece-event.ts

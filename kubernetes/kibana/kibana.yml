@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+spec:
+  selector:
+    matchLabels:
+      app: kibana
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - env:
+        - name: elasticsearch.hosts
+          value: http://elasticsearch.mailpiece.svc:9200
+        image: docker.elastic.co/kibana/kibana:7.15.2
+        imagePullPolicy: IfNotPresent
+        name: kibana
+        ports:
+        - containerPort: 5601
+        resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+status: {}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kibana
+spec:
+  selector:
+    app: kibana
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 5601
+      nodePort: 30601
