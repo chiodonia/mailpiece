@@ -16,7 +16,7 @@ kubectl -n mailpiece apply -f ./mailpiece-app/mailpiece-app.yml
 
 kubectl -n mailpiece create secret docker-registry docker-registry-credentials \
 --docker-server=https://index.docker.io/v1/ --docker-username=chiodonia \
---docker-password=galippa --docker-email=andrea.chiodoni@gmail.com 
+--docker-password=xxx --docker-email=andrea.chiodoni@gmail.com 
 kubectl -n mailpiece apply -f ./kubernetes/kafka-connect/kafka-connect.yml
 kubectl -n mailpiece apply -f ./kubernetes/elasticsearch/elasticsearch-connectors.yml
 kubectl -n mailpiece apply -f ./kubernetes/elasticsearch/elasticsearch.yml
