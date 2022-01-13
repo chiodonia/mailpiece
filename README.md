@@ -92,10 +92,13 @@ http://localhost:30601/
 - stateful stream operations
 	- state management
 	- windowing
+- https://developer.confluent.io/learn/kafka-storage-and-processing/
 - programming models
 	- Kafka producer and consumer API
 		- library
 		- imperative - any lanuage
+		- https://developer.confluent.io/learn/apache-kafka-faqs/
+		- https://developer.confluent.io/learn/kafka-transactions-and-guarantees/
 	- Kafka streams
 		- library
 		- declarative - Java
