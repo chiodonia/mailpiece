@@ -80,20 +80,34 @@ http://localhost:9200/logistics.mailpiece-state/_search?q=id:990000000000001945
 ## kibaba
 http://localhost:30601/
 
-## Stream processing concepts
+## Stream programming
+- stream: infinite flow of messages (topic in Kafka)
+- message semantic: event, document, state, command
+- message: key-value (record in Kafka)
+- message ordering (message key) vs message timestamps
+- scalability: sharding. Shard key is the message key (partitions in Kafka)
 - co-partitioning
-	- https://medium.com/xebia-france/kafka-streams-co-partitioning-requirements-illustrated-2033f686b19c
-	- rekey
 - streams - tables duality
 - stateless stream operations
 - stateful stream operations
 	- state management
-	- time and Windows
+	- windowing
 - programming models
-	https://docs.ksqldb.io/en/0.8.x-ksqldb/concepts/ksqldb-and-kafka-streams/
-	https://developer.confluent.io/learn-kafka/kafka-streams/
-	https://developer.confluent.io/learn-kafka/ksqldb/
-
+	- Kafka producer and consumer API
+		- library
+		- imperative - any lanuage
+	- Kafka streams
+		- library
+		- declarative - Java
+		- stateless and stateful stream operations
+		- reliable and distributed (sharding) state stores
+		- interactive query
+		- https://developer.confluent.io/learn-kafka/kafka-streams/
+	- ksqlDB
+		- runtime
+		- SQL
+		- stateless and stateful stream operations
+		- https://developer.confluent.io/learn-kafka/ksqldb/
 
 
 	

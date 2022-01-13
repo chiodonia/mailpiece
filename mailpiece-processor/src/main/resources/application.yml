@@ -21,6 +21,8 @@ management:
       jvm: false
 
 spring:
+  profiles:
+    active: cc
   rsocket:
     server:
       address: localhost
