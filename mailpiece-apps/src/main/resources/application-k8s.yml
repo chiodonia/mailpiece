@@ -1,0 +1,7 @@
+spring:
+  kafka:
+    bootstrap-servers: kafka-kafka-bootstrap.mailpiece.svc:9092
+
+apps:
+  ksqldb:
+    url: http://ksqldb-server.mailpiece.svc:8088

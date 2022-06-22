@@ -1,5 +1,5 @@
 import { DateTime } from 'apikana/default-types'
-import { Product } from './product';
+import { Priority } from './priority'
 
 export interface MailpieceEvent {
     /**
@@ -20,7 +20,7 @@ export interface MailpieceEvent {
          * zip.
          */
         zip: string
-        product: Product
+        priority: Priority
     }
 
     /**

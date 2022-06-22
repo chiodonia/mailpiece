@@ -1,9 +1,0 @@
-spring:
-  kafka:
-    bootstrap-servers: pkc-lq8v7.eu-central-1.aws.confluent.cloud:9092
-    security:
-      protocol: SASL_SSL
-    properties:
-      sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username='QUZXCYHMIT6CZ3SW' password='FbbuFO5+xQmumdzIMnkgaL0hR92/pPxuoHBn6hlNTGsmQlOyBPuVR0S9F6mYYUoV';
-      sasl.mechanism: PLAIN
-      client.dns.lookup: use_all_dns_ips

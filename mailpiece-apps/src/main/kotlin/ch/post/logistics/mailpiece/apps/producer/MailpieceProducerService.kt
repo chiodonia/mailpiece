@@ -1,9 +1,9 @@
-package ch.post.logistics.mailpiece.processor.service
+package ch.post.logistics.mailpiece.apps.producer
 
 import ch.post.logistics.mailpiece.v1.Delivered
 import ch.post.logistics.mailpiece.v1.Ingested
 import ch.post.logistics.mailpiece.v1.MailpieceEvent
-import ch.post.logistics.mailpiece.v1.Product
+import ch.post.logistics.mailpiece.v1.Priority
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -23,12 +23,12 @@ import java.time.ZonedDateTime
 import kotlin.random.Random
 
 @Service
-class MailpieceGeneratorService(val kafkaProperties: KafkaProperties) {
+class MailpieceProducerService(kafkaProperties: KafkaProperties) {
 
-    private val logger = LoggerFactory.getLogger(MailpieceGeneratorService::class.java)
+    private val logger = LoggerFactory.getLogger(MailpieceProducerService::class.java)
 
     private val zip = listOf("6982", "6500", "6900", "3030", "1000", "4040", "2020", "9000", "1212", "5050")
-    private val products = listOf(Product.A, Product.B)
+    private val products = listOf(Priority.A, Priority.B)
     private val producer = KafkaProducer(
         kafkaProperties.buildProducerProperties(),
         StringSerializer(),
@@ -59,7 +59,7 @@ class MailpieceGeneratorService(val kafkaProperties: KafkaProperties) {
             .withIngested(
                 Ingested()
                     .withZip(zip())
-                    .withProduct(product())
+                    .withPriority(priority())
             )
     }
 
@@ -75,7 +75,7 @@ class MailpieceGeneratorService(val kafkaProperties: KafkaProperties) {
     private fun produce(event: MailpieceEvent) {
         producer.send(ProducerRecord("logistics.Mailpiece-event", event.id, event)) { metadata, exeption ->
             if (metadata.hasOffset()) {
-                logger.debug(
+                logger.trace(
                     "Event {} produced: {}/{}@{}",
                     event,
                     metadata!!.topic(),
@@ -96,7 +96,7 @@ class MailpieceGeneratorService(val kafkaProperties: KafkaProperties) {
         return zip[Random.nextInt(0, zip.size)]
     }
 
-    private fun product(): Product {
+    private fun priority(): Priority {
         return products[Random.nextInt(0, products.size)]
     }
 

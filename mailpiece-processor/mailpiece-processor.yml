@@ -28,18 +28,19 @@ spec:
       restartPolicy: Always
       containers:
         - name: mailpiece-processor
-          image: mailpiece-processor:0.1.0-SNAPSHOT
+          image: mailpiece-processor:1.0.0-SNAPSHOT
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: mailpiece-processor-state-store
               mountPath: /data/kafka-streams
+              subPath: state
           env:
             - name: POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
             - name: SPRING_PROFILES_ACTIVE
-              value: "k8"
+              value: "K8s"
           ports:
             - containerPort: 7070
             - containerPort: 8080

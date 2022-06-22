@@ -18,7 +18,7 @@ spec:
       - env:
         - name: elasticsearch.hosts
           value: http://elasticsearch.mailpiece.svc:9200
-        image: docker.elastic.co/kibana/kibana:7.15.2
+        image: docker.elastic.co/kibana/kibana:latest
         imagePullPolicy: IfNotPresent
         name: kibana
         ports:

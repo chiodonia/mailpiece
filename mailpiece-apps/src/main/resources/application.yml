@@ -1,0 +1,43 @@
+server:
+  port: 9090
+  http2:
+    enabled: true
+
+apps:
+  ksqldb:
+    url: http://localhost:30088
+
+logging:
+  level:
+    root: ERROR
+    ch.post: DEBUG
+    org.apache.kafka: ERROR
+
+management:
+  endpoint.health:
+    show-details: always
+    show-components: always
+    probes.enabled: true
+  security.enabled: false
+  endpoints.web.exposure.include: '*'
+  metrics:
+    enable:
+      jvm: true
+
+spring:
+  application:
+    name: mailpiece-apps
+  kafka:
+    bootstrap-servers: localhost:32000
+    client-id: mailpiece-apps
+  rsocket:
+    server:
+      port: 9091
+  graphql:
+    schema:
+      printer:
+        enabled: true
+    rsocket:
+      mapping: graphql
+    graphiql:
+      enabled: true

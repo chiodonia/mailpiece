@@ -20,10 +20,6 @@ spec:
           value: http://0.0.0.0:8088
         - name: KSQL_BOOTSTRAP_SERVERS
           value: kafka-kafka-bootstrap.mailpiece.svc:9092
-        - name: KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE
-          value: "true"
-        - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
-          value: "true"
 #        - name: KSQL_KSQL_CONNECT_URL
 #          value: http://kafka-connect-connect-api:8083
 #        - name: KSQL_KSQL_QUERIES_FILE
@@ -38,15 +34,15 @@ spec:
       serviceAccountName: ""
 status: {}
 ---
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
   name: ksqldb-server
-  labels:
-    service: ksqldb-server
 spec:
-  ports:
-  - port: 8088
-    protocol: TCP
   selector:
     service: ksqldb-server
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8088
+      nodePort: 30088

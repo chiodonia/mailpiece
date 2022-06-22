@@ -1,6 +1,5 @@
-package ch.post.logistics.mailpiece.processor.service.health
+package ch.post.logistics.mailpiece.processor.config
 
-import ch.post.logistics.mailpiece.processor.service.KafkaStreamsService
 import org.apache.kafka.streams.KafkaStreams
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 
 @Component
-class KStreamsHealthIndicator(val kafkaStreamsService: KafkaStreamsService) : ReactiveHealthIndicator {
-    val logger: Logger = LoggerFactory.getLogger(KStreamsHealthIndicator::class.java)
+class KafkaStreamsHealthIndicator(val kafkaStreamsService: KafkaStreamsService) : ReactiveHealthIndicator {
+    val logger: Logger = LoggerFactory.getLogger(KafkaStreamsHealthIndicator::class.java)
     override fun health(): Mono<Health> {
         val state = kafkaStreamsService.state()
         return if (state == KafkaStreams.State.RUNNING) {

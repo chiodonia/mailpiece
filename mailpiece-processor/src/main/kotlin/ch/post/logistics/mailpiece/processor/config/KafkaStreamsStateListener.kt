@@ -4,9 +4,9 @@ import org.apache.kafka.streams.KafkaStreams
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class StateListener : KafkaStreams.StateListener {
+class KafkaStreamsStateListener : KafkaStreams.StateListener {
 
-    private val logger: Logger = LoggerFactory.getLogger(StateListener::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(KafkaStreamsStateListener::class.java)
 
     lateinit var state: KafkaStreams.State
 

@@ -12,7 +12,6 @@ import org.springframework.kafka.annotation.EnableKafkaStreams
 import org.springframework.kafka.config.StreamsBuilderFactoryBeanConfigurer
 import org.springframework.kafka.streams.KafkaStreamsMicrometerListener
 
-
 @Configuration
 @EnableKafkaStreams
 class KafkaStreamsConfig {
@@ -25,13 +24,13 @@ class KafkaStreamsConfig {
         return StreamsBuilderFactoryBeanConfigurer {
             it.setStateListener(stateListener())
             it.addListener(KafkaStreamsMicrometerListener(meterRegistry))
-            it.setStreamsUncaughtExceptionHandler(MyStreamsUncaughtExceptionHandler())
+            it.setStreamsUncaughtExceptionHandler(KafkaStreamsUncaughtExceptionHandler())
         }
     }
 
     @Bean
-    fun stateListener(): StateListener {
-        return StateListener()
+    fun stateListener(): KafkaStreamsStateListener {
+        return KafkaStreamsStateListener()
     }
 
     @Bean

@@ -1,84 +1,99 @@
 package ch.post.logistics.mailpiece.processor.service
 
-import ch.post.logistics.mailpiece.processor.Application.Companion.MAILPIECE_TABLE
-import ch.post.logistics.mailpiece.processor.Application.Companion.QUERY_REMOTE_STATE_STORE_BY_KEY
-import ch.post.logistics.mailpiece.processor.service.remote.QueryStateStoreByKeyRequest
+import ch.post.logistics.mailpiece.processor.processing.MailpieceProcessor.Companion.MAILPIECE_STORE
+import ch.post.logistics.mailpiece.processor.service.MailpieceServiceRemoteStateStoreController.Companion.FIND_MAILPIECE_BY_KEY
 import ch.post.logistics.mailpiece.v1.Mailpiece
+import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.KeyQueryMetadata
+import org.apache.kafka.streams.StreamsConfig
+import org.apache.kafka.streams.query.KeyQuery
+import org.apache.kafka.streams.query.StateQueryRequest
 import org.apache.kafka.streams.state.HostInfo
 import org.slf4j.LoggerFactory
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.kafka.config.StreamsBuilderFactoryBean
 import org.springframework.messaging.rsocket.RSocketRequester
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class MailpieceService(val kafkaStreamsService: KafkaStreamsService, val builder: RSocketRequester.Builder) {
+class MailpieceService(
+    val streamsBuilderFactoryBean: StreamsBuilderFactoryBean,
+    val builder: RSocketRequester.Builder
+) {
 
     private val logger = LoggerFactory.getLogger(MailpieceService::class.java)
 
-    operator fun get(id: String): Mono<Mailpiece?> {
-        logger.debug(
-            "Local hostInfo is {}:{}",
-            kafkaStreamsService.hostInfo().host(),
-            kafkaStreamsService.hostInfo().port()
-        )
+    fun findMailpiece(id: String): Mono<Mailpiece> {
         val metadata: KeyQueryMetadata =
-            kafkaStreamsService.metadata(MAILPIECE_TABLE, id) ?: throw NoSuchElementException()
-        return if (kafkaStreamsService.hostInfo() == metadata.activeHost()) {
-            getLocal(MAILPIECE_TABLE, id)
+            metadata(id)
+        return if (hostInfo() == metadata.activeHost()) {
+            findMailpieceLocally(id)
         } else {
             if (metadata.activeHost() == HostInfo.unavailable()) {
                 logger.warn("Host metadata is currently unavailable")
                 throw RuntimeException("Host metadata is currently unavailable")
             } else {
-                getRemote(metadata.activeHost(), MAILPIECE_TABLE, id)
+                findMailpieceRemotely(metadata.activeHost(), id)
             }
         }
     }
 
-    fun getLocal(store: String, id: String): Mono<Mailpiece?> {
+    fun findMailpieceLocally(key: String): Mono<Mailpiece> {
         logger.debug(
-            "Query local state-store {} for mailpiece id {}",
-            store,
-            id
+            "Querying local state-store {}: key={}",
+            MAILPIECE_STORE,
+            key
         )
-        val mailpiece = kafkaStreamsService.store(store)!!.get(id)
-        return if (mailpiece == null) {
+
+        //onlyPartitionResult returns an exception is no elements are found!
+        return try {
+            return Mono.just(
+                kafkaStreams().query<Mailpiece>(
+                    StateQueryRequest.inStore(MAILPIECE_STORE)
+                        .withQuery(KeyQuery.withKey(key))
+                ).onlyPartitionResult.result
+            )
+        } catch (e: IllegalArgumentException) {
             Mono.empty()
-        } else {
-            Mono.just(mailpiece as Mailpiece)
         }
+
     }
 
-    private fun getRemote(hostInfo: HostInfo, store: String, id: String): Mono<Mailpiece?> {
+    private fun findMailpieceRemotely(hostInfo: HostInfo, key: String): Mono<Mailpiece> {
         logger.debug(
-            "Query remote state-store {} on {}:{} for mailpiece id {}",
-            store,
+            "Querying state-store {} hosted on {}:{}: key={}",
+            MAILPIECE_STORE,
             hostInfo.host(),
             hostInfo.port(),
-            id
+            key
         )
         val requester = builder.tcp(hostInfo.host(), hostInfo.port())
         return requester
-            .route(QUERY_REMOTE_STATE_STORE_BY_KEY)
-            .data(
-                QueryStateStoreByKeyRequest(
-                    kafkaStreamsService.hostInfo().host(),
-                    kafkaStreamsService.hostInfo().port(),
-                    store,
-                    id
-                )
-            )
+            .route(FIND_MAILPIECE_BY_KEY)
+            .data(key)
             .retrieveMono(object : ParameterizedTypeReference<Mailpiece>() {})
             .doOnError { throwable ->
                 logger.error(
                     "{} failed",
-                    QUERY_REMOTE_STATE_STORE_BY_KEY,
+                    FIND_MAILPIECE_BY_KEY,
                     throwable
                 )
             }
-            .onErrorMap { throwable -> NoSuchElementException("$id not found") }
+            .onErrorMap { NoSuchElementException("$key not found") }
+    }
+
+    private fun hostInfo(): HostInfo {
+        return HostInfo.buildFromEndpoint(streamsBuilderFactoryBean.streamsConfiguration!![StreamsConfig.APPLICATION_SERVER_CONFIG] as String)
+    }
+
+    private fun metadata(key: String): KeyQueryMetadata {
+        return kafkaStreams().queryMetadataForKey(MAILPIECE_STORE, key, Serdes.String().serializer())
+    }
+
+    private fun kafkaStreams(): KafkaStreams {
+        return streamsBuilderFactoryBean.kafkaStreams!!
     }
 
 }

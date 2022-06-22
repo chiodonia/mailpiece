@@ -1,6 +1,5 @@
 package ch.post.logistics.mailpiece.processor.processing
 
-import ch.post.logistics.mailpiece.processor.Application.Companion.MAILPIECE_TABLE
 import ch.post.logistics.mailpiece.v1.Event
 import ch.post.logistics.mailpiece.v1.Mailpiece
 import ch.post.logistics.mailpiece.v1.MailpieceEvent
@@ -19,7 +18,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.support.serializer.JsonSerde
 
 @Configuration
-class MailpieceStateStream(val objectMapper: ObjectMapper) {
+class MailpieceProcessor(val objectMapper: ObjectMapper) {
+
+    companion object {
+        const val MAILPIECE_STORE = "mailpiece-store"
+    }
 
     @Bean
     fun mailpieceEventStreamToTable(builder: StreamsBuilder): KTable<String, Mailpiece>? {
@@ -29,7 +32,7 @@ class MailpieceStateStream(val objectMapper: ObjectMapper) {
                 Serdes.String(),
                 JsonSerde(Mailpiece::class.java, objectMapper).noTypeInfo()
             ).withName("mailpiece-state-table"),
-            Materialized.`as`<String, Mailpiece>(Stores.persistentKeyValueStore(MAILPIECE_TABLE))
+            Materialized.`as`<String, Mailpiece>(Stores.persistentKeyValueStore(MAILPIECE_STORE))
                 .withKeySerde(Serdes.String())
                 .withValueSerde(JsonSerde(Mailpiece::class.java, objectMapper).noTypeInfo())
         )
@@ -64,7 +67,7 @@ class MailpieceStateStream(val objectMapper: ObjectMapper) {
             newMailpiece.withId(mailpieceEvent.id)
             if (mailpieceEvent.ingested != null) {
                 newMailpiece.state = MailpieceState.INGESTED
-                newMailpiece.product = mailpieceEvent.ingested.product
+                newMailpiece.priority = mailpieceEvent.ingested.priority
                 newMailpiece.events.add(
                     Event()
                         .withZip(mailpieceEvent.ingested.zip)

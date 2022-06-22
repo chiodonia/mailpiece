@@ -1,5 +1,7 @@
 # Mailpiece
 
+A playground to experiment stuff around streaming.
+
 ## Deploy
 kubectl delete namespace mailpiece
 kubectl create namespace mailpiece
@@ -11,8 +13,9 @@ kubectl -n mailpiece apply -f ./mailpiece-processor/mailpiece-topics.yml
 kubectl -n mailpiece delete -f ./mailpiece-processor/mailpiece-processor.yml
 kubectl -n mailpiece apply -f ./mailpiece-processor/mailpiece-processor.yml
 
+kubectl -n mailpiece delete -f ./kubernetes/ksqldb-server/ksqldb-server.yml
 kubectl -n mailpiece apply -f ./kubernetes/ksqldb-server/ksqldb-server.yml
-kubectl -n mailpiece apply -f ./mailpiece-app/mailpiece-app.yml
+kubectl -n mailpiece apply -f ./mailpiece-apps/mailpiece-apps.yml
 
 kubectl -n mailpiece create secret docker-registry docker-registry-credentials \
 --docker-server=https://index.docker.io/v1/ --docker-username=chiodonia \
@@ -52,24 +55,7 @@ kubectl port-forward deployment/postgres 5432:5432 -n mailpiece &
 * http://localhost:8088/
 * psql -h localhost -U mydbadmin --password mydbadmin -p 5432 mydb
 
-## Tests
-## mailpiece-processor
-http://localhost:30080/kstreams/topology
-http://localhost:30080/kstreams/state
-http://localhost:30080/kstreams/stores
-http://localhost:30080/kstreams/stores/mailpiece-table/get
-http://localhost:30080/kstreams/stores/mailpiece-table/get?key=990000000000000010
-
-http://localhost:30080/actuator/
-http://localhost:30080/actuator/health
-http://localhost:30080/actuator/prometheus
-
-http://localhost:30080/generate?nr=10&from=200&delay=10000
-http://localhost:30080/mailpiece?id=990000000000000200
-
-## mailpiece-app
-http://localhost:30090/ingested?zip=6900
-http://localhost:30090/mailpiece?id=990000000000000200
+## Endpoints
 
 ### elasticsearch
 kubectl port-forward deployment/elasticsearch 9200:9200 -n mailpiece &
@@ -80,7 +66,7 @@ http://localhost:9200/logistics.mailpiece-state/_search?q=id:990000000000001945
 ## kibaba
 http://localhost:30601/
 
-## Stream programming
+## Stream programming notes
 - stream: infinite flow of messages (topic in Kafka)
 - message semantic: event, document, state, command
 - message: key-value (record in Kafka)

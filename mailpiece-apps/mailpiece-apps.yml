@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailpiece-apps
+spec:
+  selector:
+      matchLabels:
+        app: mailpiece-apps
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mailpiece-apps
+    spec:
+      containers:
+        - name: mailpiece-apps
+          image: mailpiece-apps:0.1.0-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+          ports:
+            - containerPort: 9090
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: mailpiece-apps
+spec:
+  selector:
+    app: mailpiece-apps
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 9090
+      nodePort: 30090
+    - protocol: TCP
+      port: 9091
+      nodePort: 30091

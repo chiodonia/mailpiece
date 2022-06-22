@@ -1,4 +1,4 @@
-package ch.post.logistics.mailpiece.processor
+package ch.post.logistics.mailpiece.apps
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -6,7 +6,11 @@ import org.springframework.boot.runApplication
 @SpringBootApplication
 class Application
 
-fun main(args: Array<String>) {
-    runApplication<Application>(*args)
+fun main() {
+    runApplication<Application>()
 }
+
+
+
+
 

@@ -1,5 +1,5 @@
 import { DateTime } from 'apikana/default-types'
-import { Product } from './product';
+import { Priority } from './priority'
 
 export interface Mailpiece {
     /**
@@ -13,9 +13,9 @@ export interface Mailpiece {
     state: MailpieceState
 
     /**
-     * The product.
+     * The priority.
      */
-     product: Product
+    priority: Priority
 
     /**
      * The events.

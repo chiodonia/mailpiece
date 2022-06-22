@@ -1,13 +1,13 @@
 server:
   port: 8080
   http2:
-    enabled: false
+    enabled: true
 
 logging:
   level:
-    root: WARN
+    root: ERROR
     ch.post: DEBUG
-    org.apache.kafka: WARN
+    org.apache.kafka: ERROR
 
 management:
   endpoint.health:
@@ -18,11 +18,9 @@ management:
   endpoints.web.exposure.include: '*'
   metrics:
     enable:
-      jvm: false
+      jvm: true
 
 spring:
-  profiles:
-    active: cc
   rsocket:
     server:
       address: localhost
@@ -30,11 +28,11 @@ spring:
   application:
     name: mailpiece-processor
   kafka:
-    bootstrap-servers: localhost:9094
+    bootstrap-servers: localhost:32000
     client-id: mailpiece-processor
     streams:
       application-id: mailpiece-processor
-      state-dir: /tmp/kafka-streams
+      state-dir: /tmp/kafka-streams/state
       auto-offset-reset: earliest
       enable-auto-commit: false
       max-poll-records: 100
@@ -44,4 +42,9 @@ spring:
           server: localhost:7070
         processing:
           guarantee: exactly_once_v2
-
+  graphql:
+    schema:
+      printer:
+        enabled: true
+    graphiql:
+      enabled: true

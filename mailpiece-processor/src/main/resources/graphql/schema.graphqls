@@ -1,0 +1,28 @@
+scalar DateTime
+
+type Query {
+  findMailpiece(id: ID!): Mailpiece
+}
+
+type Mailpiece {
+  id: ID!
+  state: MailpieceState!
+  priority: Priority
+  events: [MailpieceEvent]!
+}
+
+type MailpieceEvent {
+  timestamp: DateTime
+  zip: String
+  state: MailpieceState
+}
+
+enum MailpieceState {
+  INGESTED
+  DELIVERED
+}
+
+enum Priority {
+  A
+  B
+}

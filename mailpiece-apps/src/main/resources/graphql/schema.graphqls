@@ -1,0 +1,53 @@
+scalar DateTime
+scalar LocalTime
+
+type Query {
+  findMailpiece(id: ID!): Mailpiece
+  greeting: Greeting
+}
+
+type Subscription {
+  delivered(zip: String, take: Int): Delivered
+  greetings: Greeting
+}
+
+type Greeting {
+  greeting: String
+  timestamp: LocalTime
+  greetingFrom: [GreetingFrom]
+}
+
+type GreetingFrom {
+  name: String
+}
+
+type Mailpiece {
+  id: ID!
+  state: MailpieceState!
+  priority: Priority
+  events: [MailpieceEvent]!
+}
+
+type MailpieceEvent {
+  timestamp: DateTime
+  zip: String
+  state: MailpieceState
+}
+
+enum MailpieceState {
+  INGESTED
+  DELIVERED
+}
+
+enum Priority {
+  A
+  B
+}
+
+type Delivered {
+  id: String
+  timestamp: String
+  delivered: String
+}
+
+

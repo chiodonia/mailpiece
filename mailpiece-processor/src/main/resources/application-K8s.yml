@@ -6,7 +6,7 @@ spring:
   kafka:
     bootstrap-servers: kafka-kafka-bootstrap.mailpiece.svc:9092
     streams:
-      state-dir: /data/kafka-streams
+      state-dir: /data/kafka-streams/state
       properties:
         application:
           server: ${POD_IP}:7070

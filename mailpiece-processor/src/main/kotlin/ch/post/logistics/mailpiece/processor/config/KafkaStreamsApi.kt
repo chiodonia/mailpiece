@@ -1,12 +1,12 @@
-package ch.post.logistics.mailpiece.processor.api
+package ch.post.logistics.mailpiece.processor.config
 
-import ch.post.logistics.mailpiece.processor.service.KafkaStreamsService
-import org.apache.kafka.streams.state.KeyValueIterator
+import org.apache.kafka.streams.query.KeyQuery
+import org.apache.kafka.streams.query.RangeQuery
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/kstreams")
-class KafkaStreamsController(val kafkaStreamsService: KafkaStreamsService) {
+class KafkaStreamsApi(val kafkaStreamsService: KafkaStreamsService) {
 
     @GetMapping("/topology")
     fun topology(): String {
@@ -23,14 +23,14 @@ class KafkaStreamsController(val kafkaStreamsService: KafkaStreamsService) {
         return kafkaStreamsService.stores()
     }
 
-    @GetMapping("/stores/{name}/get")
-    fun store(@PathVariable name: String): KeyValueIterator<String, *> {
-        return kafkaStreamsService.store(name)!!.all()
+    @GetMapping("/stores/{name}/data")
+    fun store(@PathVariable name: String): Any? {
+        return kafkaStreamsService.store(name, RangeQuery.withNoBounds())
     }
 
-    @GetMapping(value = ["/stores/{name}/get"], params = ["key"])
+    @GetMapping(value = ["/stores/{name}/data"], params = ["key"])
     fun stores(@PathVariable name: String, @RequestParam(value = "key") key: String): Any? {
-        return kafkaStreamsService.store(name, key)
+        return kafkaStreamsService.store(name, KeyQuery.withKey(key))
     }
 
 }

@@ -4,10 +4,9 @@ import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class MyStreamsUncaughtExceptionHandler : StreamsUncaughtExceptionHandler {
+class KafkaStreamsUncaughtExceptionHandler : StreamsUncaughtExceptionHandler {
 
-    private val logger: Logger = LoggerFactory.getLogger(MyStreamsUncaughtExceptionHandler::class.java)
-
+    private val logger: Logger = LoggerFactory.getLogger(KafkaStreamsUncaughtExceptionHandler::class.java)
     override fun handle(exception: Throwable?): StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse {
         logger.error("Uncaught exception", exception)
         return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.REPLACE_THREAD

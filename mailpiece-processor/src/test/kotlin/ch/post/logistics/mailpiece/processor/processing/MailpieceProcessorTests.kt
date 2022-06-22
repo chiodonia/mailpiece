@@ -1,6 +1,6 @@
 package ch.post.logistics.mailpiece.processor.processing
 
-import ch.post.logistics.mailpiece.processor.Application
+import ch.post.logistics.mailpiece.processor.processing.MailpieceProcessor.Companion.MAILPIECE_STORE
 import ch.post.logistics.mailpiece.v1.*
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -21,7 +21,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer
 import java.time.ZonedDateTime
 import java.util.*
 
-class MailpieceStateStreamTest {
+class MailpieceProcessorTests {
 
     private val config: Properties = mapOf(
         StreamsConfig.APPLICATION_ID_CONFIG to "mailpiece-processor",
@@ -39,13 +39,13 @@ class MailpieceStateStreamTest {
     @BeforeEach
     fun beforeEach() {
         val builder = StreamsBuilder()
-        val mailpieceStateStream = MailpieceStateStream(
+        val mailpieceProcessor = MailpieceProcessor(
             ObjectMapper()
                 .registerModule(JavaTimeModule())
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
         )
-        mailpieceStateStream.mailpieceEventStreamToTable(builder)
+        mailpieceProcessor.mailpieceEventStreamToTable(builder)
         testDriver = TopologyTestDriver(builder.build(), config)
 
         mailpieceEventTestInputTopic = testDriver.createInputTopic(
@@ -53,24 +53,24 @@ class MailpieceStateStreamTest {
             Serdes.String().serializer(),
             JsonSerializer()
         )
-        mailpieceTable = testDriver.getKeyValueStore(Application.MAILPIECE_TABLE)
+        mailpieceTable = testDriver.getKeyValueStore(MAILPIECE_STORE)
     }
 
     @Test
-    fun testMailpieceEventStreamToMailpieceTable() {
+    fun test_mailpiece_events_are_processed_into_mailpiece_state() {
         val ingested = MailpieceEvent()
             .withId("99000000001")
             .withTimestamp(ZonedDateTime.now())
             .withIngested(
                 Ingested()
-                    .withProduct(Product.A)
+                    .withPriority(Priority.A)
                     .withZip("7000")
             )
         mailpieceEventTestInputTopic.pipeInput(TestRecord(ingested.id, ingested))
         Assertions.assertNotNull(mailpieceTable[ingested.id])
         Assertions.assertEquals(ingested.id, mailpieceTable[ingested.id].id)
         Assertions.assertEquals(MailpieceState.INGESTED, mailpieceTable[ingested.id].state)
-        Assertions.assertEquals(ingested.ingested.product, mailpieceTable[ingested.id].product)
+        Assertions.assertEquals(ingested.ingested.priority, mailpieceTable[ingested.id].priority)
         Assertions.assertEquals(1, mailpieceTable[ingested.id].events.count())
         Assertions.assertEquals(MailpieceState.INGESTED, mailpieceTable[ingested.id].events[0].state)
         Assertions.assertEquals(ingested.ingested.zip, mailpieceTable[ingested.id].events[0].zip)
@@ -84,7 +84,7 @@ class MailpieceStateStreamTest {
             )
         mailpieceEventTestInputTopic.pipeInput(TestRecord(delivered.id, delivered))
         Assertions.assertEquals(MailpieceState.DELIVERED, mailpieceTable[delivered.id].state)
-        Assertions.assertEquals(ingested.ingested.product, mailpieceTable[delivered.id].product)
+        Assertions.assertEquals(ingested.ingested.priority, mailpieceTable[delivered.id].priority)
         Assertions.assertEquals(2, mailpieceTable[delivered.id].events.count())
         Assertions.assertEquals(MailpieceState.DELIVERED, mailpieceTable[delivered.id].events[1].state)
         Assertions.assertEquals(delivered.delivered.zip, mailpieceTable[delivered.id].events[1].zip)
