@@ -14,7 +14,7 @@ import java.util.stream.Collectors
 @Service
 class KafkaStreamsService(
     val streamsBuilderFactoryBean: StreamsBuilderFactoryBean,
-    val stateListener: KafkaStreamsStateListener
+    val stateListener: KafkaStreamsStateListener,
 ) {
 
     fun topology(): TopologyDescription {

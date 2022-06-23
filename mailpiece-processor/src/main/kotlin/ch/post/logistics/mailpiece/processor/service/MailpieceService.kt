@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono
 @Service
 class MailpieceService(
     val streamsBuilderFactoryBean: StreamsBuilderFactoryBean,
-    val builder: RSocketRequester.Builder
+    val builder: RSocketRequester.Builder,
 ) {
 
     private val logger = LoggerFactory.getLogger(MailpieceService::class.java)

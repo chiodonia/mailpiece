@@ -41,7 +41,7 @@ class StreamingService(val ksql: KsqlService) {
         return ksql.toJson(
             ksql.query(
                 """
-                        SELECT STRUCT(`id`:=ID, `state`:=STATE, `priority`:=PRIORITY, `events`:=EVENTS) 
+                        SELECT STRUCT(`id`:=ID, `state`:=STATE, `priority`:=PRIORITY, `events`:=EVENTS)
                         FROM MAILPIECE_TABLE 
                         WHERE KEY = '${id}'
                     """.trimIndent(),
@@ -71,9 +71,9 @@ class StreamingService(val ksql: KsqlService) {
                 """.trimIndent(),
                 """
                     CREATE TYPE MAILPIECE_EVENT AS STRUCT<
-                        TIMESTAMP VARCHAR, 
-                        ZIP VARCHAR, 
-                        STATE VARCHAR
+                        `timestamp` VARCHAR, 
+                        `zip` VARCHAR, 
+                        `state` VARCHAR
                     >
                 """.trimIndent(),
                 """

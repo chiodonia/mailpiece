@@ -8,13 +8,10 @@ kubectl create namespace mailpiece
 
 kubectl -n mailpiece apply -f "https://strimzi.io/install/latest?namespace=mailpiece" 
 kubectl -n mailpiece apply -f ./kubernetes/kafka/kafka.yml 
+kubectl -n mailpiece apply -f ./kubernetes/ksqldb-server/ksqldb-server.yml
 
 kubectl -n mailpiece apply -f ./mailpiece-processor/mailpiece-topics.yml
-kubectl -n mailpiece delete -f ./mailpiece-processor/mailpiece-processor.yml
 kubectl -n mailpiece apply -f ./mailpiece-processor/mailpiece-processor.yml
-
-kubectl -n mailpiece delete -f ./kubernetes/ksqldb-server/ksqldb-server.yml
-kubectl -n mailpiece apply -f ./kubernetes/ksqldb-server/ksqldb-server.yml
 kubectl -n mailpiece apply -f ./mailpiece-apps/mailpiece-apps.yml
 
 kubectl -n mailpiece create secret docker-registry docker-registry-credentials \
@@ -61,7 +58,7 @@ kubectl port-forward deployment/postgres 5432:5432 -n mailpiece &
 kubectl port-forward deployment/elasticsearch 9200:9200 -n mailpiece &
 http://localhost:9200/logistics.mailpiece-state
 http://localhost:9200/logistics.mailpiece-state/_search
-http://localhost:9200/logistics.mailpiece-state/_search?q=id:990000000000001945
+http://localhost:9200/logistics.mailpiece-state/_search?q=id:990000000000000200
 
 ## kibaba
 http://localhost:30601/

@@ -51,9 +51,11 @@ spec:
     app: mailpiece-apps
   type: NodePort
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 9090
       nodePort: 30090
-    - protocol: TCP
+    - name: rsocket
+      protocol: TCP
       port: 9091
       nodePort: 30091
