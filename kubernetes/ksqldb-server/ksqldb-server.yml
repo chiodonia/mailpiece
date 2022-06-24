@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       service: ksqldb-server
-  replicas: 1
+  replicas: 2
   strategy:
     type: Recreate
   template:
@@ -20,6 +20,14 @@ spec:
           value: http://0.0.0.0:8088
         - name: KSQL_BOOTSTRAP_SERVERS
           value: kafka-kafka-bootstrap.mailpiece.svc:9092
+        - name: KSQL_KSQL_SERVICE_ID
+          value: mailpiece
+#        - name: KSQL_HEAP_OPTS
+#          value: -Xms256M -Xmx1G
+        - name: KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE
+          value: "true"
+        - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
+          value: "true"
 #        - name: KSQL_KSQL_CONNECT_URL
 #          value: http://kafka-connect-connect-api:8083
 #        - name: KSQL_KSQL_QUERIES_FILE
@@ -29,6 +37,22 @@ spec:
         name: ksqldb-server
         ports:
         - containerPort: 8088
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8088
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8088
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5        
         resources: {}
       restartPolicy: Always
       serviceAccountName: ""

@@ -41,6 +41,13 @@ A GraphQL (https://graphql.org/) controller to try it out, see https://spring.io
 ## Streaming
 Streaming shows how to leverage https://ksqldb.io/ to query streams and tables.
 
+---
+**NOTE**
+There is a ksqlDB API client to interact with the ksqlDB REST API:
+- https://docs.ksqldb.io/en/latest/developer-guide/ksqldb-clients/java-client/
+- https://docs.ksqldb.io/en/latest/developer-guide/api/
+---
+
 GraphQL (https://graphql.org/) supports the following queries and subscriptions: 
 
 ### Queries
